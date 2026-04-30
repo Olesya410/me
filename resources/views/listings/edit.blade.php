@@ -1,4 +1,4 @@
-@extends('layouts.app')
+{{-- @extends('layouts.app')
 
 @section('content')
 <div class="wrapper">
@@ -42,4 +42,4 @@
         <button class="btn btn-primary">Обновить</button>
     </form>
 </div>
-@endsection
+@endsection --}}

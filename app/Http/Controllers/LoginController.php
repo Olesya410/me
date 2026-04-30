@@ -24,7 +24,7 @@ class LoginController extends Controller
             $user = Auth::user();
 
             if ($user->role_id == 2) {
-                return redirect()->intended('/admin');
+                return redirect()->route('admin.index');
             }
             return redirect()->intended('/profile');
         }

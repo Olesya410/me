@@ -9,32 +9,21 @@ use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
 {
-    public function store(Request $request, $listingId)
+   public function store(Request $request, $listing)
     {
-        if (!Auth::check()) {
-            return redirect()->route('login')->with('error', 'Для бронирования необходимо авторизоваться');
-        }
-
-        $listing = Listing::findOrFail($listingId);
-
-        // Проверяем, не забронировано ли уже
-        if ($listing->isBookedByUser(Auth::id())) {
-            return back()->with('error', 'Вы уже забронировали это жильё');
-        }
-
         $validated = $request->validate([
-            'check_in' => 'required|date|after_or_equal:today',
+            'check_in' => 'required|date',
             'check_out' => 'required|date|after:check_in',
         ]);
 
         Booking::create([
-            'user_id' => Auth::id(),
-            'listing_id' => $listingId,
+            'listing_id' => $listing,
             'check_in' => $validated['check_in'],
             'check_out' => $validated['check_out'],
+            'user_id' => auth()->id(), // добавляем ID текущего пользователя
         ]);
 
-        return back()->with('success', 'Жильё успешно забронировано!');
+        return redirect()->route('listing.show', ['id' => $listing])->with('success', 'Бронирование успешно создано');
     }
 
     public function destroy($bookingId)

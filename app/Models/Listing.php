@@ -60,13 +60,11 @@ class Listing extends Model
         return $this->hasMany(Photo::class); 
     }
 
-    
-    
-    
     public function host()
     {
         return $this->belongsTo(User::class, 'owner_id'); // или другой внешний ключ
     }
+    
     public function owner()
     {
         return $this->belongsTo(User::class, 'owner_id');

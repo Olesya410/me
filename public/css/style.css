@@ -1,4 +1,3 @@
-/* Глобальные переменные цветовой палитры */
 :root {
   /* Основные цвета */
   --primary-color: #020f46;
@@ -25,7 +24,6 @@
   --box-shadow-color: rgba(0, 0, 0, 0.1);
 }
 
-/* Глобальные стили для html и body */
 html, body {
   height: 100%;
   margin: 0;
@@ -33,23 +31,31 @@ html, body {
   display: flex;
   flex-direction: column;
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  background-color: #f8f9fa; /* Можно оставить или изменить */
-  color: #212529; /* Цвет текста по умолчанию */
+  background-color: #ffffff; 
+  color: #212529;
 }
 
-/* Обертка контента, чтобы он занимал всё доступное пространство */
 .wrapper {
-  flex: 1; /* занимает всё свободное пространство */
+  flex: 1; 
   display: flex;
   flex-direction: column;
-  align-items: center; /* по желанию центрировать содержимое по горизонтали */
-  justify-content: center; /* по желанию центрировать содержимое по вертикали */
-  padding: 40px 20px; /* внутренние отступы */
+  align-items: center; 
+  justify-content: center; 
 }
 
-/* Стиль для формы блока */
+body.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; 
+  margin: 0; 
+}
+
+main.content {
+  flex: 1;
+}
+
 .form-box {
-  background-color: #ffffff; /* белый фон */
+  background-color: #ffffff;
   padding: 30px;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
@@ -57,7 +63,7 @@ html, body {
   width: 100%;
 }
 
-/* Заголовок формы */
+
 .form-title {
   font-size: 24px;
   font-weight: 700;
@@ -75,7 +81,7 @@ label {
 }
 
 /* Поля ввода */
-/* input[type="text"], */
+input[type="text"],
 input[type="password"] {
   width: 100%;
   padding: 10px 12px;
@@ -150,7 +156,6 @@ a:hover {
   left: 50%;
   width: 80px;
   height: 4px;
-  background-color: var(--primary-color);
   transform: translateX(-50%);
   border-radius: 2px;
 }
@@ -239,18 +244,18 @@ footer ul li {
 
 /* Обертка формы - задаем цвет текста и фона */
 #searchForm {
-  background-color: #020f46; /* фон формы */
-  color: #ffffff; /* цвет текста для всей формы */
+  background-color: #020f46; 
+  color: #ffffff; 
 }
 
 /* Все input, select, label внутри формы */
 #searchForm input,
 #searchForm select,
 #searchForm label {
-  color: #ffffff; /* цвет текста */
-  background-color: #020f46; /* фон элементов */
- /* граница в том же цвете */
+  color: #ffffff; 
+  background-color: #020f46; 
 }
+
 #searchForm select,
 #searchForm input{
     color: #000000;
@@ -258,8 +263,8 @@ footer ul li {
 }
 /* Для кнопки */
 #searchForm .start-search-btn {
-  background-color: #ffffff; /* белая кнопка */
-  color: #000000; /* черный текст */
+  background-color: #ffffff; 
+  color: #000000; 
   border: none;
   padding: 12px 24px;
   border-radius: 8px;
@@ -274,14 +279,14 @@ footer ul li {
 
 /* Наведение на кнопку */
 #searchForm .start-search-btn:hover {
-  background-color: #e0e0e0; /* слегка серый при наведении */
+  background-color: #e0e0e0; 
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
 /* Иконка внутри кнопки */
 #searchForm .bi-search {
-  color: #000000; /* иконка тоже черная */
+  color: #000000;
   margin-right: 8px;
 }
 

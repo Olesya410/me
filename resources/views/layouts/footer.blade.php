@@ -1,33 +1,26 @@
-<footer class="py-4 mt-5 bg-light border-top">
+<!-- HTML -->
+<footer class="custom-footer py-4 mt-5 bg-light border-top">
   <div class="container">
-    <div class="row justify-content-between align-items-center">
-    <div class="col-md-3 mb-3 mb-md-0 text-center text-md-start">
-        <img src="/storage/photos/logo2.png" alt="Логотип" class="logo-img"  />
-    </div>
+    <div class="d-flex flex-wrap align-items-center justify-content-between">
 
-      <div class="col-md-8">
-        <div class="row">
-          <div class="col-4">
-            <h5>Навигация</h5>
-            <ul class="list-unstyled">
-              <li><a href="#" class="text-muted text-decoration-none">Главная</a></li>
-              <li><a href="#cities" class="text-muted text-decoration-none">Города</a></li>
-              <li><a href="#advantages" class="text-muted text-decoration-none">Преимущества</a></li>
-              <li><a href="#how-it-works" class="text-muted text-decoration-none">Как это работает</a></li>
-              <li><a href="#faq" class="text-muted text-decoration-none">Вопросы</a></li>
-              <li><a href="#contact" class="text-muted text-decoration-none">Контакты</a></li>
-            </ul>
-          </div>
-          <div class="col-4">
-            <h5>Контакты</h5>
-            <ul class="list-unstyled">
-              <li>Телефон: +7 (123) 456-78-90</li>
-              <li>Email: info@yourdomain.com</li>
-              <li>Адрес: г. Москва, ул. Примерная, д. 1</li>
-            </ul>
-          </div>
-        </div>
+      <!-- Логотип -->
+      <div class="mb-3 mb-md-0 d-flex align-items-center">
+        <img src="/storage/logo.png" alt="Квартира_NOW" class="logo-img" style="height: 150px;">
       </div>
+
+      <!-- Навигация -->
+      <div class="d-flex flex-nowrap mx-3">
+        <a class="navbar-brand fw-bold mx-3" href="{{ route('listings.index') }}" style="color: inherit; text-decoration: none;">Услуги</a>
+        <a class="navbar-brand fw-bold mx-3" href="{{ route('bookings.index') }}" style="color: inherit; text-decoration: none;">Забронировать</a>
+        <a class="navbar-brand fw-bold mx-3" href="{{ route('home') }}" style="color: inherit; text-decoration: none;">Квартира NOW</a>
+      </div>
+
+      <!-- Контакт -->
+      <div class="d-flex flex-column align-items-end">
+        <p class="mb-0"><strong>Почта:</strong> info@kvartira_now.ru</p>
+        <p class="mb-0"><strong>Телефон:</strong> +7 (123) 456-78-90</p>
+      </div>
+
     </div>
   </div>
 </footer>

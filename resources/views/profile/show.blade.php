@@ -122,25 +122,6 @@
                     </div>
                 </div>
             </div>
-
-            {{-- <h3>Объявлений: {{ $countListings ?? 0 }}</h3>
-
-            @if(isset($listings) && $listings->isEmpty())
-                <p>У вас пока нет объявлений.</p>
-            @else
-                <ul>
-                    @foreach($listings as $listing)
-                        <li>
-                            <strong>{{ $listing->title }}</strong><br>
-                            {{ $listing->description }}<br>
-                            Цена за ночь: {{ $listing->price_per_night }}<br>
-                            Адрес: {{ $listing->location_address }}<br>
-                            Даты: {{ $listing->available_from }} - {{ $listing->available_to }}
-                        </li>
-                    @endforeach
-                </ul>
-            @endif --}}
-
             <!-- Действия -->
             <div class="action-buttons">
                 <a href="{{ route('profile.edit') }}" class="btn btn-custom btn-lg px-4 me-2 mb-2">
@@ -157,6 +138,45 @@
                 </button>
             </form>
         </div>
+
+        <h3>Мои объявления</h3>
+
+        @if(isset($listings) && $listings->isEmpty())
+            <p>У вас пока нет объявлений.</p>
+        @else
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Название</th>
+                        <th>Описание</th>
+                        <th>Цена за ночь</th>
+                        <th>Адрес</th>
+                        <th>Даты</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($listings as $listing)
+                        <tr>
+                            <td>{{ $listing->title }}</td>
+                            <td>{{ $listing->description }}</td>
+                            <td>{{ $listing->price_per_night }}</td>
+                            <td>{{ $listing->location_address }}</td>
+                            <td>{{ $listing->available_from }} - {{ $listing->available_to }}</td>
+                            <td>
+                                {{-- <a href="{{ route('listings.edit', $listing->id) }}" class="btn btn-sm btn-primary">Редактировать</a> --}}
+                                <form action="{{ route('listings.destroy', $listing->id) }}" method="POST" style="display:inline-block;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Вы уверены, что хотите удалить это объявление?')">Удалить</button>
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endif
+
     </div>
 </div>
 @endsection

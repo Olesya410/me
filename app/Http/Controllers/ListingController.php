@@ -51,7 +51,7 @@ class ListingController extends Controller
             });
         }
 
-        $listings = $query->paginate(30);
+        $listings = $query->paginate(5);
 
         $filterData = [
             'priceMin' => $request->input('priceMin'),
@@ -66,19 +66,29 @@ class ListingController extends Controller
 
     public function show($id)
     {
-        $listing = Listing::findOrFail($id);
+        // Загружаем список с связью 'features'
         $listing = Listing::with('features')->findOrFail($id);
 
         $userBooking = null;
 
         if (auth()->check()) {
             $userId = auth()->id(); 
+            // Предполагается, что у Listing есть связь bookings
             $userBooking = $listing->bookings->firstWhere('user_id', $userId);
         }
 
-        $user = auth()->user(); 
-        $hostReviews = HostReview::with('user')->where('owner_id', $user->id)->get();
+        // Получаем текущего пользователя
+        $user = auth()->user();
+
+        // Если пользователь авторизован, получаем отзывы хозяина
+        $hostReviews = [];
+        if ($user) {
+            $hostReviews = HostReview::with('user')->where('owner_id', $user->id)->get();
+        }
+
+        // Получаем отзывы о квартире
         $reviews = Review::where('listing_id', $listing->id)->with('user')->get();
+
         return view('listings.show', compact('listing', 'userBooking', 'reviews', 'user', 'hostReviews'));
     }
 
@@ -98,62 +108,69 @@ class ListingController extends Controller
     }
 
     public function store(Request $request)
-{
-    
-    // Валидация данных
-    $validated = $request->validate([
-        'title' => 'required|string|max:255',
-        'description' => 'nullable|string',
-        'area' => 'nullable|numeric',
-        'guests' => 'nullable|integer',
-        'bedrooms' => 'nullable|integer',
-        'location_address' => 'required|string|max:500',
-        'location_nearby' => 'nullable|string',
-        'price_per_night' => 'required|numeric|min:0',
-        'photos_id' => 'nullable|array',
-        'photos_id.*' => 'integer|exists:photos,id',
-        'available_from' => 'nullable|date|before_or_equal:available_to',
-        'available_to' => 'nullable|date|after_or_equal:available_from',
-    ], [
-        'title.required' => 'Заголовок обязателен',
-        'location_address.required' => 'Адрес обязателен',
-        'price_per_night.required' => 'Цена обязательна',
-    ]);
+    {
+        
+        // Валидация данных
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'area' => 'nullable|numeric',
+            'guests' => 'nullable|integer',
+            'bedrooms' => 'nullable|integer',
+            'location_address' => 'required|string|max:500',
+            'location_nearby' => 'nullable|string',
+            'price_per_night' => 'required|numeric|min:0',
+            'photos_id' => 'nullable|array',
+            'photos_id.*' => 'integer|exists:photos,id',
+            'available_from' => 'nullable|date|before_or_equal:available_to',
+            'available_to' => 'nullable|date|after_or_equal:available_from',
+        ], [
+            'title.required' => 'Заголовок обязателен',
+            'location_address.required' => 'Адрес обязателен',
+            'price_per_night.required' => 'Цена обязательна',
+        ]);
 
-    // Создаем объявление
-    $listing = Listing::create([
-    'title' => $validated['title'],
-    'description' => $validated['description'] ?? null,
-    'description_full' => $request->input('description_full') ?? null, // добавьте, если есть
-    'area' => $validated['area'] ?? null,
-    'guests' => $validated['guests'] ?? null,
-    'bedrooms' => $validated['bedrooms'] ?? null,
-    'location_address' => $validated['location_address'],
-    'location_nearby' => $validated['location_nearby'] ?? null,
-    'location_details' => $request->input('location_details') ?? null, // добавьте, если есть
-    'price_per_night' => $validated['price_per_night'],
-    'check_in_time' => $request->input('check_in_time') ?? null, // добавьте, если есть
-    'check_out_time' => $request->input('check_out_time') ?? null, // добавьте, если есть
-    'deposit' => $request->input('deposit') ?? null, // добавьте, если есть
-    'house_rules' => $request->input('house_rules') ?? null, // добавьте, если есть
-    'owner_id' => auth()->id(),
-    'available_from' => $validated['available_from'] ?? null,
-    'available_to' => $validated['available_to'] ?? null,
-    ]);
+        // Создаем объявление
+        
+        $listing = Listing::create([
+        'title' => $validated['title'],
+        'description' => $validated['description'] ?? null,
+        'description_full' => $request->input('description_full') ?? null, // добавьте, если есть
+        'area' => $validated['area'] ?? null,
+        'guests' => $validated['guests'] ?? null,
+        'bedrooms' => $validated['bedrooms'] ?? null,
+        'location_address' => $validated['location_address'],
+        'location_nearby' => $validated['location_nearby'] ?? null,
+        'location_details' => $request->input('location_details') ?? null, // добавьте, если есть
+        'price_per_night' => $validated['price_per_night'],
+        'check_in_time' => $request->input('check_in_time') ?? null, // добавьте, если есть
+        'check_out_time' => $request->input('check_out_time') ?? null, // добавьте, если есть
+        'deposit' => $request->input('deposit') ?? null, // добавьте, если есть
+        'house_rules' => $request->input('house_rules') ?? null, // добавьте, если есть
+        'owner_id' => auth()->id(),
+        'available_from' => $validated['available_from'] ?? null,
+        'available_to' => $validated['available_to'] ?? null,
+        ]);
 
-    // Связываем фотографии, если есть
-    if (!empty($validated['photos_id'])) {
-        foreach ($validated['photos_id'] as $photoId) {
-            $photo = \App\Models\Photo::find($photoId);
-            if ($photo) {
-                $photo->listing_id = $listing->id;
-                $photo->save();
+        // Связываем фотографии, если есть
+        if (!empty($validated['photos_id'])) {
+            foreach ($validated['photos_id'] as $photoId) {
+                $photo = \App\Models\Photo::find($photoId);
+                if ($photo) {
+                    $photo->listing_id = $listing->id;
+                    $photo->save();
+                }
             }
         }
-    }
 
-    return redirect()->route('listings.index')->with('success', 'Объявление создано!');
-}
+        return redirect()->route('listings.index')->with('success', 'Объявление создано!');
+    }
+    public function edit($id)
+    {
+        $listing = Listing::findOrFail($id);
+        // Передать объявление в вид для редактирования
+        return view('listings.edit', compact('listing'));
+    }
 
     public function create()
     {
@@ -164,39 +181,6 @@ class ListingController extends Controller
         return view('listings.photocreate');
     }
 
-    public function update(Request $request, Listing $listing)
-    {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'description_full' => 'nullable|string',
-            'area' => 'nullable|numeric',
-            'guests' => 'nullable|integer',
-            'bedrooms' => 'nullable|integer',
-            'location_address' => 'required|string|max:500',
-            'location_nearby' => 'nullable|string',
-            'price_per_night' => 'required|numeric|min:0',
-            'check_in_time' => 'nullable|date_format:H:i',
-            'check_out_time' => 'nullable|date_format:H:i',
-            'deposit' => 'nullable|numeric',
-            'house_rules' => 'nullable|string',
-            'owner_id' => 'required|integer',
-            'photos_id' => 'nullable|array',
-            'available_from' => 'nullable|date|before_or_equal:available_to',
-            'available_to' => 'nullable|date|after_or_equal:available_from',
-        ],[
-            'title.required' => 'Заголовок обязателен',
-            'location_address.required' => 'Адрес обязателен',
-            'price_per_night.required' => 'Цена обязательна',
-        ]);
-
-        if (isset($validated['photos_id'])) {
-            $listing->photos_id = $validated['photos_id'];
-        }
-
-        $listing->update($validated);
-        return redirect()->route('listings.index')->with('success', 'Объявление обновлено!');
-    }
 
     public function storeHost(Request $request, Listing $listing)
     {
@@ -221,6 +205,20 @@ class ListingController extends Controller
         $listings = $user->listings ?? collect();
         $countListings = $listings->count();
         return view('profile.show', compact('user', 'listings', 'countListings'));
+    }
+
+    
+    public function destroy($id)
+    {
+        $listing = Listing::findOrFail($id);
+        
+        // Удаляем все фотографии, связанные с этим объявлением
+        $listing->photos()->delete();
+
+        // Теперь удаляем объявление
+        $listing->delete();
+
+        return redirect()->route('listings.index')->with('success', 'Объявление успешно удалено');
     }
     
 }

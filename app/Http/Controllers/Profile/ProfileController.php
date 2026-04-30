@@ -4,13 +4,17 @@ namespace App\Http\Controllers\Profile;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Listing;
 
 class ProfileController extends Controller
 {
     public function show()
     {
         $user = Auth::user();
-        return view('profile.show', compact('user'));
+
+        $listings = Listing::where('owner_id', $user->id)->get();
+
+        return view('profile.show', ['user' => $user, 'listings' => $listings]);
     }
 
     public function edit()
